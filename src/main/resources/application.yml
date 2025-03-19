@@ -19,3 +19,9 @@ spring:
     url: jdbc:mysql://localhost:3308/scheduler?useSSL=false&allowPublicKeyRetrieval=true
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+    show-sql: true
