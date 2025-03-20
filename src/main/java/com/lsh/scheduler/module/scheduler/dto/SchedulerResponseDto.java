@@ -11,7 +11,6 @@ public class SchedulerResponseDto {
     private Long id;
     private String name;
     private String task;
-    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

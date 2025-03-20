@@ -67,7 +67,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                         .task(rs.getString("task"))
                         .member(memberRepository.findById(rs.getLong("member_id"))
                                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)))
-                        .password(rs.getString("password"))
                         .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                         .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                         .build(), id);
@@ -85,7 +84,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                         .task(rs.getString("task"))
                         .member(memberRepository.findById(rs.getLong("member_id"))
                                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)))
-                        .password(rs.getString("password"))
                         .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                         .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                         .build());
@@ -105,7 +103,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                         .task(rs.getString("task"))
                         .member(memberRepository.findById(rs.getLong("member_id"))
                                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)))
-                        .password(rs.getString("password"))
                         .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                         .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                         .build(), name);
@@ -121,7 +118,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                         .task(rs.getString("task"))
                         .member(memberRepository.findById(rs.getLong("member_id"))
                                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)))
-                        .password(rs.getString("password"))
                         .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                         .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                         .build(), modifiedAt);
@@ -141,7 +137,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                         .task(rs.getString("task"))
                         .member(memberRepository.findById(rs.getLong("member_id"))
                                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)))
-                        .password(rs.getString("password"))
                         .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                         .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                         .build(), name, modifiedAt);

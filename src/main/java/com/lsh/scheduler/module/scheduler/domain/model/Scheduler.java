@@ -26,7 +26,6 @@ public class Scheduler {
                 .id(scheduler.id)
                 .task(scheduler.task)
                 .name(scheduler.member.getName())
-                .password(scheduler.password)
                 .createdAt(scheduler.createdAt)
                 .modifiedAt(scheduler.modifiedAt)
                 .build();
