@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -32,10 +33,12 @@ import java.util.Optional;
 public class SchedulerRepositoryImpl implements SchedulerRepository {
     private final JdbcTemplate jdbcTemplate;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public SchedulerRepositoryImpl(DataSource dataSource, MemberRepository memberRepository) {
+    public SchedulerRepositoryImpl(DataSource dataSource, MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -51,7 +54,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", member.getId());
         parameters.put("task", schedulerCreateRequestDto.getTask());
-        parameters.put("password", schedulerCreateRequestDto.getPassword());
+        parameters.put("password", passwordEncoder.encode(schedulerCreateRequestDto.getPassword()));
         parameters.put("createdAt", now);
         parameters.put("modifiedAt", now);
 
@@ -161,6 +164,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                 .task(rs.getString("task"))
                 .member(memberRepository.findById(rs.getLong("member_id"))
                         .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND)))
+                .password(rs.getString("password"))
                 .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                 .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
                 .build();
@@ -174,10 +178,9 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
     }
 
     private void validatePassword(long id, String password) {
-        String sql = "select * from scheduler.scheduler where id=? and password=?";
-        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs), id, password);
-
-        if (result.isEmpty()) {
+        Scheduler scheduler = findById(id)
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
+        if (!passwordEncoder.matches(password, scheduler.getPassword())){
             throw new SchedulerException(SchedulerExceptionCode.WRONG_PASSWORD);
         }
     }
