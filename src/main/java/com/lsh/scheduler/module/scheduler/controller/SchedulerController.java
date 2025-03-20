@@ -1,4 +1,4 @@
-package com.lsh.scheduler.global.scheduler.controller;
+package com.lsh.scheduler.module.scheduler.controller;
 
 import com.lsh.scheduler.common.response.ListResponse;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;

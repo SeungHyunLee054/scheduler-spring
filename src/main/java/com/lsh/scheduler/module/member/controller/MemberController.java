@@ -1,4 +1,4 @@
-package com.lsh.scheduler.global.member.controller;
+package com.lsh.scheduler.module.member.controller;
 
 import com.lsh.scheduler.module.member.dto.MemberCreateRequestDto;
 import com.lsh.scheduler.module.member.dto.MemberResponseDto;
