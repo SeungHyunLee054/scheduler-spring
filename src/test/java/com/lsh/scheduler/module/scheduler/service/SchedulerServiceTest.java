@@ -92,36 +92,19 @@ class SchedulerServiceTest {
         List<Scheduler> list = List.of(new Scheduler(1L, member, "test", "test", now, now));
         Pageable pageable = PageRequest.of(0, 10);
 
-        given(schedulerRepository.findAllByNameAndModifiedAt(any(), any(), any()))
-                .willReturn(new PageImpl<>(list, pageable, list.size()));
-        given(schedulerRepository.findAll(any()))
-                .willReturn(new PageImpl<>(list, pageable, list.size()));
-        given(schedulerRepository.findAllByName(any(), any()))
-                .willReturn(new PageImpl<>(list, pageable, list.size()));
-        given(schedulerRepository.findAllByModifiedAt(any(), any()))
+        given(schedulerRepository.findAll(any(), any(), any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
 
         // When
-        ListResponse<SchedulerResponseDto> test1 =
+        ListResponse<SchedulerResponseDto> result =
                 schedulerService.getAllSchedulers(name, modifiedAt, pageable);
-        ListResponse<SchedulerResponseDto> test2 =
-                schedulerService.getAllSchedulers(null, modifiedAt, pageable);
-        ListResponse<SchedulerResponseDto> test3 =
-                schedulerService.getAllSchedulers(name, null, pageable);
-        ListResponse<SchedulerResponseDto> test4 =
-                schedulerService.getAllSchedulers(null, null, pageable);
 
         // Then
-        verify(schedulerRepository, times(1)).findAll(any());
-        verify(schedulerRepository, times(1)).findAllByName(any(), any());
-        verify(schedulerRepository, times(1)).findAllByModifiedAt(any(), any());
-        verify(schedulerRepository, times(1)).findAllByNameAndModifiedAt(any(), any(), any());
+        verify(schedulerRepository, times(1)).findAll(any(), any(), any());
 
         assertAll(
-                () -> assertEquals(1L, test1.getContent().get(0).getId()),
-                () -> assertEquals(1L, test2.getContent().get(0).getId()),
-                () -> assertEquals(1L, test3.getContent().get(0).getId()),
-                () -> assertEquals(1L, test4.getContent().get(0).getId())
+                () -> assertEquals(1L, result.getContent().get(0).getId()),
+                () -> assertEquals("test", result.getContent().get(0).getName())
         );
     }
 

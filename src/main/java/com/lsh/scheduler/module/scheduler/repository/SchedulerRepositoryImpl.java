@@ -1,22 +1,19 @@
 package com.lsh.scheduler.module.scheduler.repository;
 
+import com.lsh.scheduler.common.utils.PasswordUtils;
 import com.lsh.scheduler.module.member.domain.model.Member;
 import com.lsh.scheduler.module.member.exception.MemberException;
 import com.lsh.scheduler.module.member.exception.MemberExceptionCode;
 import com.lsh.scheduler.module.member.repository.MemberRepository;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
-import com.lsh.scheduler.module.scheduler.exception.SchedulerException;
-import com.lsh.scheduler.module.scheduler.exception.SchedulerExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -24,21 +21,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class SchedulerRepositoryImpl implements SchedulerRepository {
     private final JdbcTemplate jdbcTemplate;
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public SchedulerRepositoryImpl(DataSource dataSource, MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public SchedulerRepositoryImpl(DataSource dataSource, MemberRepository memberRepository) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -55,7 +47,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         parameters.put("member_id", member.getId());
         parameters.put("task", schedulerCreateRequestDto.getTask());
         // 비밀번호를 passwordEncoder로 암호화하여 저장
-        parameters.put("password", passwordEncoder.encode(schedulerCreateRequestDto.getPassword()));
+        parameters.put("password", PasswordUtils.encode(schedulerCreateRequestDto.getPassword()));
         parameters.put("createdAt", now);
         parameters.put("modifiedAt", now);
 
@@ -74,64 +66,39 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
     }
 
     @Override
-    public Page<Scheduler> findAll(Pageable pageable) {
-        String sql = "select * from scheduler.scheduler order by modifiedAt desc limit ? offset ?";
+    public Page<Scheduler> findAll(String name, LocalDate modifiedAt, Pageable pageable) {
+        StringBuilder sql = new StringBuilder("select * from scheduler.scheduler s");
+        List<Object> parameters = new ArrayList<>();
 
-        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs),
-                pageable.getPageSize(), pageable.getOffset());
+        if (name == null && modifiedAt != null) {
+            sql.append(" where date(s.modifiedAt) = ?");
+            parameters.add(modifiedAt);
+        } else if (name != null && modifiedAt == null) {
+            sql.append(" join scheduler.member m on m.id = s.member_id");
+            sql.append("  where m.name = ?");
+            parameters.add(name);
+        } else if (name != null) {
+            sql.append(" s");
+            sql.append(" join scheduler.member m on m.id = s.member_id");
+            sql.append("  where m.name = ?");
+            sql.append("  and date(s.modifiedAt) = ?");
+            parameters.add(name);
+            parameters.add(modifiedAt);
+        }
 
-        return new PageImpl<>(result, pageable, getTotalCnt());
-    }
+        sql.append("  order by s.modifiedAt desc");
+        sql.append("  limit ? offset ?");
+        parameters.add(pageable.getPageSize());
+        parameters.add(pageable.getOffset());
 
-    @Override
-    public Page<Scheduler> findAllByName(String name, Pageable pageable) {
-        String sql = "select * " +
-                "from scheduler.scheduler s " +
-                "join scheduler.member m on m.id = s.member_id " +
-                "where m.name = ? " +
-                "order by s.modifiedAt desc " +
-                "limit ? offset ?";
-
-        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs),
-                name, pageable.getPageSize(), pageable.getOffset());
-
-        return new PageImpl<>(result, pageable, getTotalCnt());
-    }
-
-    @Override
-    public Page<Scheduler> findAllByModifiedAt(LocalDate modifiedAt, Pageable pageable) {
-        String sql = "select * " +
-                "from scheduler.scheduler " +
-                "where date(scheduler.modifiedAt) = ? " +
-                "order by modifiedAt desc " +
-                "limit ? offset ?";
-
-        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs),
-                modifiedAt, pageable.getPageSize(), pageable.getOffset());
+        List<Scheduler> result = jdbcTemplate.query(sql.toString(), (rs, rowNum) -> getBuild(rs),
+                parameters.toArray());
 
         return new PageImpl<>(result, pageable, getTotalCnt());
     }
-
-    @Override
-    public Page<Scheduler> findAllByNameAndModifiedAt(String name, LocalDate modifiedAt, Pageable pageable) {
-        String sql = "select * " +
-                "from scheduler.scheduler s " +
-                "join scheduler.member m on m.id = s.member_id " +
-                "where m.name = ? and date(s.modifiedAt) = ? " +
-                "order by s.modifiedAt desc " +
-                "limit ? offset ?";
-
-        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs)
-                , name, modifiedAt, pageable.getPageSize(), pageable.getOffset());
-
-        return new PageImpl<>(result, pageable, getTotalCnt());
-    }
-
 
     @Override
     public Optional<Scheduler> updateScheduler(SchedulerUpdateRequestDto dto) {
-        validatePassword(dto.getSchedulerId(), dto.getPassword());
-
         String sql = "update scheduler.scheduler s " +
                 "join scheduler.member m on m.id = s.member_id " +
                 "set s.task=?,m.name=? where s.id=?";
@@ -144,13 +111,11 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
     }
 
     @Override
-    public Optional<Scheduler> deleteSchedulerById(SchedulerDeleteRequestDto dto) {
-        validatePassword(dto.getSchedulerId(), dto.getPassword());
-
+    public Optional<Scheduler> deleteSchedulerById(long schedulerId) {
         String sql = "delete from scheduler.scheduler where id=?";
-        Optional<Scheduler> scheduler = findById(dto.getSchedulerId());
+        Optional<Scheduler> scheduler = findById(schedulerId);
 
-        int row = jdbcTemplate.update(sql, dto.getSchedulerId());
+        int row = jdbcTemplate.update(sql, schedulerId);
         if (row > 0) {
             return scheduler;
         }
@@ -186,20 +151,6 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         Integer totalCnt = jdbcTemplate.queryForObject(countSql, Integer.class);
 
         return totalCnt == null ? 0 : totalCnt;
-    }
-
-    /**
-     * passwordEncoder로 암호화되어 저장된 비밀번호와 입력한 비밀번호가 일치하는지 검증
-     *
-     * @param id       일정 id
-     * @param password 비밀번호
-     */
-    private void validatePassword(long id, String password) {
-        Scheduler scheduler = findById(id)
-                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
-        if (!passwordEncoder.matches(password, scheduler.getPassword())) {
-            throw new SchedulerException(SchedulerExceptionCode.WRONG_PASSWORD);
-        }
     }
 
 }

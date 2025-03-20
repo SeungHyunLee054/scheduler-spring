@@ -1,6 +1,7 @@
 package com.lsh.scheduler.module.scheduler.service;
 
 import com.lsh.scheduler.common.response.ListResponse;
+import com.lsh.scheduler.common.utils.PasswordUtils;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
@@ -41,19 +42,8 @@ public class SchedulerService {
      * @return 일정의 정보가 담겨있는 Page의 정보를 List 형태로 한 객체 반환
      */
     public ListResponse<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt, Pageable pageable) {
-        if (name == null && modifiedAt == null) {
-            return ListResponse.fromPage(schedulerRepository.findAll(pageable)
-                    .map(Scheduler::toDto));
-        } else if (name != null && modifiedAt == null) {
-            return ListResponse.fromPage(schedulerRepository.findAllByName(name, pageable)
-                    .map(Scheduler::toDto));
-        } else if (name == null) {
-            return ListResponse.fromPage(schedulerRepository.findAllByModifiedAt(modifiedAt, pageable)
-                    .map(Scheduler::toDto));
-        } else {
-            return ListResponse.fromPage(schedulerRepository.findAllByNameAndModifiedAt(name, modifiedAt, pageable)
-                    .map(Scheduler::toDto));
-        }
+        return ListResponse.fromPage(schedulerRepository.findAll(name, modifiedAt, pageable)
+                .map(Scheduler::toDto));
     }
 
     /**
@@ -63,6 +53,7 @@ public class SchedulerService {
      * @return 일정 정보(비밀번호 제외)
      */
     public SchedulerResponseDto getSchedulerById(Long schedulerId) {
+
         return Scheduler.toDto(schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
@@ -74,6 +65,8 @@ public class SchedulerService {
      * @return 수정완료된 일정 정보(비밀번호 제외)
      */
     public SchedulerResponseDto updateScheduler(SchedulerUpdateRequestDto dto) {
+        validatePassword(dto.getSchedulerId(), dto.getPassword());
+
         return Scheduler.toDto(schedulerRepository.updateScheduler(dto)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
@@ -85,7 +78,23 @@ public class SchedulerService {
      * @return 삭제된 일정 정보
      */
     public SchedulerResponseDto deleteScheduler(SchedulerDeleteRequestDto dto) {
-        return Scheduler.toDto(schedulerRepository.deleteSchedulerById(dto)
+        validatePassword(dto.getSchedulerId(), dto.getPassword());
+
+        return Scheduler.toDto(schedulerRepository.deleteSchedulerById(dto.getSchedulerId())
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
+    }
+
+    /**
+     * passwordEncoder로 암호화되어 저장된 비밀번호와 입력한 비밀번호가 일치하는지 검증
+     *
+     * @param id       일정 id
+     * @param password 비밀번호
+     */
+    private void validatePassword(long id, String password) {
+        Scheduler scheduler = schedulerRepository.findById(id)
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
+        if (!PasswordUtils.matches(password, scheduler.getPassword())) {
+            throw new SchedulerException(SchedulerExceptionCode.WRONG_PASSWORD);
+        }
     }
 }
