@@ -1,5 +1,6 @@
 package com.lsh.scheduler.module.scheduler.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SchedulerDeleteRequestDto {
-    private Long id;
+    @NotNull
+    private Long schedulerId;
+    @NotNull
     private String password;
 }

@@ -1,19 +1,19 @@
 package com.lsh.scheduler.module.scheduler.service;
 
+import com.lsh.scheduler.common.response.ListResponse;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
+import com.lsh.scheduler.module.scheduler.exception.SchedulerException;
+import com.lsh.scheduler.module.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.scheduler.module.scheduler.repository.SchedulerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,38 +24,34 @@ public class SchedulerService {
         return schedulerRepository.saveScheduler(schedulerCreateRequestDto);
     }
 
-    public List<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt) {
+    public ListResponse<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt, Pageable pageable) {
         if (name == null && modifiedAt == null) {
-            return schedulerRepository.findAll().stream()
-                    .map(Scheduler::toDto)
-                    .toList();
+            return ListResponse.fromPage(schedulerRepository.findAll(pageable)
+                    .map(Scheduler::toDto));
         } else if (name != null && modifiedAt == null) {
-            return schedulerRepository.findAllByName(name).stream()
-                    .map(Scheduler::toDto)
-                    .toList();
+            return ListResponse.fromPage(schedulerRepository.findAllByName(name, pageable)
+                    .map(Scheduler::toDto));
         } else if (name == null) {
-            return schedulerRepository.findAllByModifiedAt(modifiedAt).stream()
-                    .map(Scheduler::toDto)
-                    .toList();
+            return ListResponse.fromPage(schedulerRepository.findAllByModifiedAt(modifiedAt, pageable)
+                    .map(Scheduler::toDto));
         } else {
-            return schedulerRepository.findAllByNameAndModifiedAt(name, modifiedAt).stream()
-                    .map(Scheduler::toDto)
-                    .toList();
+            return ListResponse.fromPage(schedulerRepository.findAllByNameAndModifiedAt(name, modifiedAt, pageable)
+                    .map(Scheduler::toDto));
         }
     }
 
     public SchedulerResponseDto getSchedulerById(Long schedulerId) {
         return Scheduler.toDto(schedulerRepository.findById(schedulerId)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND)));
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
     public SchedulerResponseDto updateScheduler(SchedulerUpdateRequestDto dto) {
         return Scheduler.toDto(schedulerRepository.updateScheduler(dto)
-                .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)));
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
     public SchedulerResponseDto deleteScheduler(SchedulerDeleteRequestDto dto) {
-        return Scheduler.toDto(schedulerRepository.deleteSchedulerByIdAndPassword(dto)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND)));
+        return Scheduler.toDto(schedulerRepository.deleteSchedulerById(dto)
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 }
