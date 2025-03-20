@@ -26,7 +26,7 @@ public class SchedulerController {
                 .body(schedulerService.saveScheduler(dto));
     }
 
-    @GetMapping("/{name}&{modifiedAt}")
+    @GetMapping
     public ResponseEntity<List<SchedulerResponseDto>> getAllSchedulers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate modifiedAt) {
