@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SchedulerRequestDto {
-    private Long memberId;
+public class SchedulerUpdateRequestDto {
+    private Long schedulerId;
     private String task;
+    private String memberName;
     private String password;
 }

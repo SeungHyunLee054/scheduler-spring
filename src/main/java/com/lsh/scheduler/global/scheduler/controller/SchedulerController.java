@@ -1,9 +1,9 @@
 package com.lsh.scheduler.global.scheduler.controller;
 
-import com.lsh.scheduler.module.scheduler.dto.DeleteSchedulerRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
-import com.lsh.scheduler.module.scheduler.dto.UpdateSchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
 import com.lsh.scheduler.module.scheduler.service.SchedulerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +21,7 @@ public class SchedulerController {
 
     @PostMapping
     public ResponseEntity<SchedulerResponseDto> addScheduler(
-            @RequestBody SchedulerRequestDto dto) {
+            @RequestBody SchedulerCreateRequestDto dto) {
         return ResponseEntity.ok()
                 .body(schedulerService.saveScheduler(dto));
     }
@@ -41,13 +41,13 @@ public class SchedulerController {
     }
 
     @PutMapping
-    public ResponseEntity<SchedulerResponseDto> updateScheduler(@RequestBody UpdateSchedulerRequestDto dto) {
+    public ResponseEntity<SchedulerResponseDto> updateScheduler(@RequestBody SchedulerUpdateRequestDto dto) {
         return ResponseEntity.ok()
                 .body(schedulerService.updateScheduler(dto));
     }
 
     @DeleteMapping
-    public ResponseEntity<SchedulerResponseDto> deleteScheduler(@RequestBody DeleteSchedulerRequestDto dto) {
+    public ResponseEntity<SchedulerResponseDto> deleteScheduler(@RequestBody SchedulerDeleteRequestDto dto) {
         return ResponseEntity.ok()
                 .body(schedulerService.deleteScheduler(dto));
     }
