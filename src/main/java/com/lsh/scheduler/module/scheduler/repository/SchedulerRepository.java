@@ -1,10 +1,10 @@
 package com.lsh.scheduler.module.scheduler.repository;
 
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler.module.scheduler.dto.DeleteSchedulerRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
-import com.lsh.scheduler.module.scheduler.dto.UpdateSchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface SchedulerRepository {
 
-    SchedulerResponseDto saveScheduler(SchedulerRequestDto schedulerRequestDto);
+    SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto);
 
     Optional<Scheduler> findById(long id);
 
@@ -24,7 +24,7 @@ public interface SchedulerRepository {
 
     List<Scheduler> findAllByNameAndModifiedAt(String name, LocalDate modifiedAt);
 
-    Optional<Scheduler> updateScheduler(UpdateSchedulerRequestDto updateSchedulerRequestDto);
+    Optional<Scheduler> updateScheduler(SchedulerUpdateRequestDto schedulerUpdateRequestDto);
 
-    Optional<Scheduler> deleteSchedulerByIdAndPassword(DeleteSchedulerRequestDto deleteSchedulerRequestDto);
+    Optional<Scheduler> deleteSchedulerByIdAndPassword(SchedulerDeleteRequestDto schedulerDeleteRequestDto);
 }

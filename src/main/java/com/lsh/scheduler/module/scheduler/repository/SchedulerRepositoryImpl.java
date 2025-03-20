@@ -3,10 +3,10 @@ package com.lsh.scheduler.module.scheduler.repository;
 import com.lsh.scheduler.module.member.domain.model.Member;
 import com.lsh.scheduler.module.member.repository.MemberRepository;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler.module.scheduler.dto.DeleteSchedulerRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
-import com.lsh.scheduler.module.scheduler.dto.UpdateSchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -34,8 +34,8 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
 
     @Override
-    public SchedulerResponseDto saveScheduler(SchedulerRequestDto schedulerRequestDto) {
-        Member member = memberRepository.findById(schedulerRequestDto.getMemberId())
+    public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
+        Member member = memberRepository.findById(schedulerCreateRequestDto.getMemberId())
                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
@@ -44,8 +44,8 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         LocalDateTime now = LocalDateTime.now();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", member.getId());
-        parameters.put("task", schedulerRequestDto.getTask());
-        parameters.put("password", schedulerRequestDto.getPassword());
+        parameters.put("task", schedulerCreateRequestDto.getTask());
+        parameters.put("password", schedulerCreateRequestDto.getPassword());
         parameters.put("createdAt", now);
         parameters.put("modifiedAt", now);
 
@@ -144,7 +144,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
 
     @Override
-    public Optional<Scheduler> updateScheduler(UpdateSchedulerRequestDto dto) {
+    public Optional<Scheduler> updateScheduler(SchedulerUpdateRequestDto dto) {
         String sql = "update scheduler.scheduler s " +
                 "join scheduler.member m on m.id = s.member_id " +
                 "set s.task=?,m.name=? where s.id=? and s.password=?";
@@ -158,7 +158,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
     }
 
     @Override
-    public Optional<Scheduler> deleteSchedulerByIdAndPassword(DeleteSchedulerRequestDto dto) {
+    public Optional<Scheduler> deleteSchedulerByIdAndPassword(SchedulerDeleteRequestDto dto) {
         String sql = "delete from scheduler.scheduler where id=? and password=?";
         Optional<Scheduler> scheduler = findById(dto.getId());
 

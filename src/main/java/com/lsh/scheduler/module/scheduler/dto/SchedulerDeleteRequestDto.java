@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteSchedulerRequestDto {
+public class SchedulerDeleteRequestDto {
     private Long id;
     private String password;
 }

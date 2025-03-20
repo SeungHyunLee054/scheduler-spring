@@ -1,10 +1,10 @@
 package com.lsh.scheduler.module.scheduler.service;
 
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler.module.scheduler.dto.DeleteSchedulerRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
-import com.lsh.scheduler.module.scheduler.dto.UpdateSchedulerRequestDto;
+import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
 import com.lsh.scheduler.module.scheduler.repository.SchedulerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,8 @@ import java.util.List;
 public class SchedulerService {
     private final SchedulerRepository schedulerRepository;
 
-    public SchedulerResponseDto saveScheduler(SchedulerRequestDto schedulerRequestDto) {
-        return schedulerRepository.saveScheduler(schedulerRequestDto);
+    public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
+        return schedulerRepository.saveScheduler(schedulerCreateRequestDto);
     }
 
     public List<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt) {
@@ -49,12 +49,12 @@ public class SchedulerService {
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND)));
     }
 
-    public SchedulerResponseDto updateScheduler(UpdateSchedulerRequestDto dto) {
+    public SchedulerResponseDto updateScheduler(SchedulerUpdateRequestDto dto) {
         return Scheduler.toDto(schedulerRepository.updateScheduler(dto)
                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND)));
     }
 
-    public SchedulerResponseDto deleteScheduler(DeleteSchedulerRequestDto dto) {
+    public SchedulerResponseDto deleteScheduler(SchedulerDeleteRequestDto dto) {
         return Scheduler.toDto(schedulerRepository.deleteSchedulerByIdAndPassword(dto)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND)));
     }
