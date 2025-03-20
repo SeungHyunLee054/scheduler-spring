@@ -1,6 +1,7 @@
 package com.lsh.scheduler.module.scheduler.service;
 
 import com.lsh.scheduler.common.response.ListResponse;
+import com.lsh.scheduler.common.utils.PasswordUtils;
 import com.lsh.scheduler.module.member.domain.model.Member;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
@@ -152,6 +153,8 @@ class SchedulerServiceTest {
                 new SchedulerUpdateRequestDto(1L, "test2", "test2", "test");
         LocalDateTime now = LocalDateTime.now();
 
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(getScheduler(getMember())));
         given(schedulerRepository.updateScheduler(any()))
                 .willReturn(Optional.of(new Scheduler(
                         1L, Member.builder().id(1L).name("test2").build()
@@ -171,18 +174,40 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @DisplayName("일정 수정 실패")
-    void fail_updateScheduler() {
+    @DisplayName("일정 수정 실패 - id로 검색된 일정 없음")
+    void fail_updateScheduler_schedulerNotFound() {
         // Given
-        given(schedulerRepository.updateScheduler(any()))
+        SchedulerUpdateRequestDto dto =
+                new SchedulerUpdateRequestDto(1L, "test", "test", "test");
+
+        given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(null));
+                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 비밀번호 불일치")
+    void fail_updateScheduler_wrongPassword() {
+        // Given
+        SchedulerUpdateRequestDto dto =
+                new SchedulerUpdateRequestDto(1L, "test", "test", "wrongPassword");
+
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(getScheduler(getMember())));
+
+        // When
+        SchedulerException exception =
+                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(dto));
+
+        // Then
+        assertEquals(SchedulerExceptionCode.WRONG_PASSWORD, exception.getErrorCode());
 
     }
 
@@ -192,14 +217,16 @@ class SchedulerServiceTest {
         // Given
         SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "test");
 
-        given(schedulerRepository.deleteSchedulerById(any()))
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(getScheduler(getMember())));
+        given(schedulerRepository.deleteSchedulerById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
 
         // When
         SchedulerResponseDto result = schedulerService.deleteScheduler(dto);
 
         // Then
-        verify(schedulerRepository, times(1)).deleteSchedulerById(any());
+        verify(schedulerRepository, times(1)).deleteSchedulerById(anyLong());
         assertAll(
                 () -> assertEquals(1L, result.getId()),
                 () -> assertEquals("test", result.getName()),
@@ -209,18 +236,38 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @DisplayName("일정 삭제 실패")
-    void fail_deleteScheduler() {
+    @DisplayName("일정 삭제 실패 - id로 검색된 일징이 없음")
+    void fail_deleteScheduler_schedulerNotFound() {
         // Given
-        given(schedulerRepository.deleteSchedulerById(any()))
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "test");
+
+        given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(null));
+                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 비밀번호 불일치")
+    void fail_deleteScheduler_wrongPassword() {
+        // Given
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "wrongPassword");
+
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(getScheduler(getMember())));
+
+        // When
+        SchedulerException exception =
+                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(dto));
+
+        // Then
+        assertEquals(SchedulerExceptionCode.WRONG_PASSWORD, exception.getErrorCode());
 
     }
 
@@ -229,6 +276,7 @@ class SchedulerServiceTest {
         return Scheduler.builder()
                 .id(1L)
                 .task("test")
+                .password(PasswordUtils.encode("test"))
                 .member(member)
                 .build();
     }
