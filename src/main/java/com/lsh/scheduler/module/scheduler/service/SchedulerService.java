@@ -23,11 +23,11 @@ public class SchedulerService {
     /**
      * 일정을 저장
      *
-     * @param schedulerCreateRequestDto 일정에 입력할 내용
+     * @param dto 일정에 입력할 내용
      * @return 일정의 정보(비밀번호 제외)
      */
-    public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
-        return Scheduler.toDto(schedulerRepository.saveScheduler(schedulerCreateRequestDto));
+    public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto dto) {
+        return Scheduler.toDto(schedulerRepository.saveScheduler(dto));
     }
 
     /**
