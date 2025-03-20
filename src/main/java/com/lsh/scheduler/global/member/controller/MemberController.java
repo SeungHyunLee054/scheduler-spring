@@ -3,6 +3,7 @@ package com.lsh.scheduler.global.member.controller;
 import com.lsh.scheduler.module.member.dto.MemberCreateRequestDto;
 import com.lsh.scheduler.module.member.dto.MemberResponseDto;
 import com.lsh.scheduler.module.member.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<MemberResponseDto> addMember(@RequestBody MemberCreateRequestDto dto) {
+    public ResponseEntity<MemberResponseDto> addMember(@Valid @RequestBody MemberCreateRequestDto dto) {
         return ResponseEntity.ok()
                 .body(memberService.createMember(dto));
     }

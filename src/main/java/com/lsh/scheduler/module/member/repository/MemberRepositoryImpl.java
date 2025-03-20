@@ -1,13 +1,13 @@
 package com.lsh.scheduler.module.member.repository;
 
 import com.lsh.scheduler.module.member.domain.model.Member;
-import com.lsh.scheduler.module.member.dto.MemberRequestDto;
+import com.lsh.scheduler.module.member.dto.MemberCreateRequestDto;
 import com.lsh.scheduler.module.member.dto.MemberResponseDto;
-import org.springframework.http.HttpStatus;
+import com.lsh.scheduler.module.member.exception.MemberException;
+import com.lsh.scheduler.module.member.exception.MemberExceptionCode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.client.HttpServerErrorException;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
 
     @Override
-    public MemberResponseDto save(MemberRequestDto dto) {
+    public MemberResponseDto save(MemberCreateRequestDto dto) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
         simpleJdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
 
@@ -39,7 +39,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
 
         Member member = findById(key.longValue())
-                .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND));
 
         return Member.toDto(member);
     }
