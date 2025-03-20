@@ -7,7 +7,6 @@ import com.lsh.scheduler.module.member.repository.MemberRepository;
 import com.lsh.scheduler.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerCreateRequestDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerDeleteRequestDto;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
 import com.lsh.scheduler.module.scheduler.dto.SchedulerUpdateRequestDto;
 import com.lsh.scheduler.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler.module.scheduler.exception.SchedulerExceptionCode;
@@ -41,7 +40,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
 
     @Override
-    public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
+    public Scheduler saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
         Member member = memberRepository.findById(schedulerCreateRequestDto.getMemberId())
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND));
 
@@ -58,10 +57,8 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
-        Scheduler scheduler = findById(key.longValue())
+        return findById(key.longValue())
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
-
-        return Scheduler.toDto(scheduler);
     }
 
     @Override

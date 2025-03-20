@@ -21,7 +21,7 @@ public class SchedulerService {
     private final SchedulerRepository schedulerRepository;
 
     public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
-        return schedulerRepository.saveScheduler(schedulerCreateRequestDto);
+        return Scheduler.toDto(schedulerRepository.saveScheduler(schedulerCreateRequestDto));
     }
 
     public ListResponse<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt, Pageable pageable) {
