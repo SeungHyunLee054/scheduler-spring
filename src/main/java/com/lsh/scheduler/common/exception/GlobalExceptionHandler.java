@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ErrorResponse> sqlExceptionHandler(SQLException e) {
+    public ResponseEntity<ErrorResponse> sqlExceptionHandler() {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.builder()
                         .errorCode(HttpStatus.BAD_REQUEST.name())
