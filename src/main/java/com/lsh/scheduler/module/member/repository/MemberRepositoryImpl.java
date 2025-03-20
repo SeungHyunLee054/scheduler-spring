@@ -2,8 +2,6 @@ package com.lsh.scheduler.module.member.repository;
 
 import com.lsh.scheduler.module.member.domain.model.Member;
 import com.lsh.scheduler.module.member.dto.MemberCreateRequestDto;
-import com.lsh.scheduler.module.member.exception.MemberException;
-import com.lsh.scheduler.module.member.exception.MemberExceptionCode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -24,7 +22,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
 
     @Override
-    public Member save(MemberCreateRequestDto dto) {
+    public Optional<Member> save(MemberCreateRequestDto dto) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
         simpleJdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
 
@@ -37,8 +35,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
 
-        return findById(key.longValue())
-                .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND));
+        return findById(key.longValue());
     }
 
     @Override

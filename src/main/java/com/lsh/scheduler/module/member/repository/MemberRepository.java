@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface MemberRepository {
 
-    Member save(MemberCreateRequestDto memberRequestDto);
+    Optional<Member> save(MemberCreateRequestDto memberRequestDto);
 
     Optional<Member> findById(Long id);
 }

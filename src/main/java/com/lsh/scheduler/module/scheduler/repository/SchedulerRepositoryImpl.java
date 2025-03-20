@@ -43,7 +43,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
 
     @Override
-    public Scheduler saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
+    public Optional<Scheduler> saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto) {
         Member member = memberRepository.findById(schedulerCreateRequestDto.getMemberId())
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND));
 
@@ -61,8 +61,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
-        return findById(key.longValue())
-                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
+        return findById(key.longValue());
     }
 
     @Override

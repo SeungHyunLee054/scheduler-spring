@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface SchedulerRepository {
 
-    Scheduler saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto);
+    Optional<Scheduler> saveScheduler(SchedulerCreateRequestDto schedulerCreateRequestDto);
 
     Optional<Scheduler> findById(long id);
 

@@ -24,7 +24,7 @@ public class SchedulerController {
     private final SchedulerService schedulerService;
 
     @PostMapping
-    public ResponseEntity<SchedulerResponseDto> addScheduler(
+    public ResponseEntity<SchedulerResponseDto> createScheduler(
             @Valid @RequestBody SchedulerCreateRequestDto dto) {
         return ResponseEntity.ok(schedulerService.saveScheduler(dto));
     }

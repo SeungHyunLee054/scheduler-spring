@@ -27,7 +27,8 @@ public class SchedulerService {
      * @return 일정의 정보(비밀번호 제외)
      */
     public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto dto) {
-        return Scheduler.toDto(schedulerRepository.saveScheduler(dto));
+        return Scheduler.toDto(schedulerRepository.saveScheduler(dto)
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
     /**
