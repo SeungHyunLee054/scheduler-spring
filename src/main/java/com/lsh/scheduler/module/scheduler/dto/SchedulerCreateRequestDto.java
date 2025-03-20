@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SchedulerCreateRequestDto {
+    @NotNull
     private Long memberId;
     @Size(max = 200)
     @NotNull
