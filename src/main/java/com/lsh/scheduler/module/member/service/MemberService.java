@@ -12,6 +12,12 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    /**
+     * 작성자 생성
+     *
+     * @param dto 작성자 id, 이름, 이메일
+     * @return 작성자 정보
+     */
     public MemberResponseDto createMember(MemberCreateRequestDto dto) {
         return Member.toDto(memberRepository.save(dto));
     }

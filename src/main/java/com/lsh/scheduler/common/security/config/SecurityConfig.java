@@ -10,17 +10,23 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+    /**
+     * 비밀 번호 암호화를 위해 설정
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * security 의존성을 주입했기 때문에 모든 페이지에 대한 인증을 허용
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // Swagger를 사용했을 때 403에러를 반환을 막기 위해 사용
                 .build();
     }
 }

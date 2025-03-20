@@ -54,6 +54,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", member.getId());
         parameters.put("task", schedulerCreateRequestDto.getTask());
+        // 비밀번호를 passwordEncoder로 암호화하여 저장
         parameters.put("password", passwordEncoder.encode(schedulerCreateRequestDto.getPassword()));
         parameters.put("createdAt", now);
         parameters.put("modifiedAt", now);
@@ -75,9 +76,9 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
 
     @Override
     public Page<Scheduler> findAll(Pageable pageable) {
-        String selectSql = "select * from scheduler.scheduler order by modifiedAt desc limit ? offset ?";
+        String sql = "select * from scheduler.scheduler order by modifiedAt desc limit ? offset ?";
 
-        List<Scheduler> result = jdbcTemplate.query(selectSql, (rs, rowNum) -> getBuild(rs),
+        List<Scheduler> result = jdbcTemplate.query(sql, (rs, rowNum) -> getBuild(rs),
                 pageable.getPageSize(), pageable.getOffset());
 
         return new PageImpl<>(result, pageable, getTotalCnt());
@@ -158,6 +159,12 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         return Optional.empty();
     }
 
+    /**
+     * row mapper
+     *
+     * @param rs result set
+     * @return 일정
+     */
     private Scheduler getBuild(ResultSet rs) throws SQLException {
         return Scheduler.builder()
                 .id(rs.getLong("id"))
@@ -170,6 +177,11 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                 .build();
     }
 
+    /**
+     * 전체 일정 수 조회
+     *
+     * @return 전체 일정 수
+     */
     private int getTotalCnt() {
         String countSql = "select count(*) from scheduler.scheduler";
         Integer totalCnt = jdbcTemplate.queryForObject(countSql, Integer.class);
@@ -177,10 +189,16 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         return totalCnt == null ? 0 : totalCnt;
     }
 
+    /**
+     * passwordEncoder로 암호화되어 저장된 비밀번호와 입력한 비밀번호가 일치하는지 검증
+     *
+     * @param id       일정 id
+     * @param password 비밀번호
+     */
     private void validatePassword(long id, String password) {
         Scheduler scheduler = findById(id)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND));
-        if (!passwordEncoder.matches(password, scheduler.getPassword())){
+        if (!passwordEncoder.matches(password, scheduler.getPassword())) {
             throw new SchedulerException(SchedulerExceptionCode.WRONG_PASSWORD);
         }
     }
