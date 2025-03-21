@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SchedulerDeleteRequestDto {
     @NotNull
-    private Long schedulerId;
+    private long schedulerId;
     @NotNull
     private String password;
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class SchedulerResponseDto {
-    private Long id;
+    private long id;
     private String name;
     private String task;
     private LocalDateTime createdAt;
