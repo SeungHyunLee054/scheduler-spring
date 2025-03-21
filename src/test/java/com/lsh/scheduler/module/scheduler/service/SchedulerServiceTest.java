@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,9 +87,8 @@ class SchedulerServiceTest {
         // Given
         String name = "test";
         LocalDate modifiedAt = LocalDate.now();
-        LocalDateTime now = LocalDateTime.now();
         Member member = getMember();
-        List<Scheduler> list = List.of(new Scheduler(1L, member, "test", "test", now, now));
+        List<Scheduler> list = List.of(getScheduler(member));
         Pageable pageable = PageRequest.of(0, 10);
 
         given(schedulerRepository.findAll(any(), any(), any()))
@@ -170,14 +168,19 @@ class SchedulerServiceTest {
         // Given
         SchedulerUpdateRequestDto dto =
                 new SchedulerUpdateRequestDto(1L, "test2", "test2", "test");
-        LocalDateTime now = LocalDateTime.now();
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
         given(schedulerRepository.updateScheduler(any()))
-                .willReturn(Optional.of(new Scheduler(
-                        1L, Member.builder().id(1L).name("test2").build()
-                        , "test2", "test", now, now)));
+                .willReturn(Optional.of(Scheduler.builder()
+                        .id(1L)
+                        .task("test2")
+                        .member(Member.builder()
+                                .id(1L)
+                                .name("test2")
+                                .email("test@test")
+                                .build())
+                        .build()));
 
         // When
         SchedulerResponseDto result = schedulerService.updateScheduler(dto);

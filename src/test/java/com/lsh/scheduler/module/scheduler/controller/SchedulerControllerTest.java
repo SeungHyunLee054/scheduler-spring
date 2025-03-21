@@ -75,8 +75,8 @@ class SchedulerControllerTest {
     void success_getAllSchedulers() throws Exception {
         // Given
         LocalDate now = LocalDate.now();
-        Integer pageIdx = 0;
-        Integer pageSize = 10;
+        int pageIdx = 0;
+        int pageSize = 10;
         List<SchedulerResponseDto> list = List.of(getResponseDto());
 
         given(schedulerService.getAllSchedulers(any(), any(), any()))
@@ -85,17 +85,25 @@ class SchedulerControllerTest {
 
         // When
         ResultActions perform1 = mockMvc
-                .perform(get("/schedulers/{pageIdx}/{pageSize}", pageIdx, pageSize));
+                .perform(get("/schedulers")
+                        .param("pageIdx", Integer.toString(pageIdx))
+                        .param("pageSize", Integer.toString(pageSize)));
         ResultActions perform2 = mockMvc
-                .perform(get("/schedulers/{pageIdx}/{pageSize}", pageIdx, pageSize)
-                        .param("name", "test"));
-        ResultActions perform3 = mockMvc
-                .perform(get("/schedulers/{pageIdx}/{pageSize}", pageIdx, pageSize)
-                        .param("modifiedAt", now.toString()));
-        ResultActions perform4 = mockMvc
-                .perform(get("/schedulers/{pageIdx}/{pageSize}", pageIdx, pageSize)
+                .perform(get("/schedulers")
                         .param("name", "test")
-                        .param("modifiedAt", now.toString()));
+                        .param("pageIdx", Integer.toString(pageIdx))
+                        .param("pageSize", Integer.toString(pageSize)));
+        ResultActions perform3 = mockMvc
+                .perform(get("/schedulers")
+                        .param("modifiedAt", now.toString())
+                        .param("pageIdx", Integer.toString(pageIdx))
+                        .param("pageSize", Integer.toString(pageSize)));
+        ResultActions perform4 = mockMvc
+                .perform(get("/schedulers")
+                        .param("name", "test")
+                        .param("modifiedAt", now.toString())
+                        .param("pageIdx", Integer.toString(pageIdx))
+                        .param("pageSize", Integer.toString(pageSize)));
 
         // Then
         perform1.andDo(print())
