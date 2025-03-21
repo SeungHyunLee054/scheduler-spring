@@ -29,12 +29,12 @@ public class SchedulerController {
         return ResponseEntity.ok(schedulerService.saveScheduler(dto));
     }
 
-    @GetMapping("/{pageIdx}/{pageSize}")
+    @GetMapping
     public ResponseEntity<ListResponse<SchedulerResponseDto>> getAllSchedulers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate modifiedAt,
-            @PathVariable int pageIdx,
-            @PathVariable int pageSize) {
+            @RequestParam int pageIdx,
+            @RequestParam int pageSize) {
         if (pageIdx < 0 || pageSize < 1) {
             throw new SchedulerException(SchedulerExceptionCode.WRONG_INPUT);
         }
