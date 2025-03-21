@@ -33,9 +33,9 @@ public class SchedulerController {
     public ResponseEntity<ListResponse<SchedulerResponseDto>> getAllSchedulers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate modifiedAt,
-            @PathVariable Integer pageIdx,
-            @PathVariable Integer pageSize) {
-        if (pageIdx == null || pageIdx < 0 || pageSize == null || pageSize < 1) {
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize) {
+        if (pageIdx < 0 || pageSize < 1) {
             throw new SchedulerException(SchedulerExceptionCode.WRONG_INPUT);
         }
         return ResponseEntity
@@ -43,10 +43,7 @@ public class SchedulerController {
     }
 
     @GetMapping("/{schedulerId}")
-    public ResponseEntity<SchedulerResponseDto> getSchedulerById(@PathVariable Long schedulerId) {
-        if (schedulerId == null || schedulerId < 1) {
-            throw new SchedulerException(SchedulerExceptionCode.WRONG_INPUT);
-        }
+    public ResponseEntity<SchedulerResponseDto> getSchedulerById(@PathVariable long schedulerId) {
         return ResponseEntity.ok(schedulerService.getSchedulerById(schedulerId));
     }
 

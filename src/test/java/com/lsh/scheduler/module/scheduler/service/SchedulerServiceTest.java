@@ -130,7 +130,7 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @DisplayName("id로 일정 조회 실패")
+    @DisplayName("id로 일정 조회 실패 - 일정이 존재하지 않음")
     void fail_getSchedulerById() {
         // Given
         given(schedulerRepository.findById(anyLong()))
@@ -142,6 +142,25 @@ class SchedulerServiceTest {
 
         // Then
         assertEquals(SchedulerExceptionCode.NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("id로 일정 조회 실패 - id 값이 1미만")
+    void fail_getSchedulerById_WrongId() {
+        // Given
+        long schedulerId1 = 0L;
+        long schedulerId2 = -1L;
+
+        // When
+        SchedulerException exception1 =
+                assertThrows(SchedulerException.class, () -> schedulerService.getSchedulerById(schedulerId1));
+        SchedulerException exception2 =
+                assertThrows(SchedulerException.class, () -> schedulerService.getSchedulerById(schedulerId2));
+
+        // Then
+        assertEquals(SchedulerExceptionCode.WRONG_INPUT, exception1.getErrorCode());
+        assertEquals(SchedulerExceptionCode.WRONG_INPUT, exception2.getErrorCode());
 
     }
 

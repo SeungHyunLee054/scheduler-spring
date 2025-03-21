@@ -52,7 +52,10 @@ public class SchedulerService {
      * @param schedulerId 일정 id
      * @return 일정 정보(비밀번호 제외)
      */
-    public SchedulerResponseDto getSchedulerById(Long schedulerId) {
+    public SchedulerResponseDto getSchedulerById(long schedulerId) {
+        if (schedulerId < 1) {
+            throw new SchedulerException(SchedulerExceptionCode.WRONG_INPUT);
+        }
 
         return Scheduler.toDto(schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
