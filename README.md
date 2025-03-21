@@ -12,3 +12,52 @@
   - Gradle
 ### Database
   - MySQL
+
+## 프로젝트 구조
+``` text
+├───main
+│   ├───java
+│   │   └───com
+│   │       └───lsh
+│   │           └───scheduler
+│   │               ├───common
+│   │               │   ├───exception
+│   │               │   ├───response
+│   │               │   ├───security
+│   │               │   │   └───config
+│   │               │   ├───swagger
+│   │               │   │   └───config
+│   │               │   └───utils
+│   │               └───module
+│   │                   ├───member
+│   │                   │   ├───controller
+│   │                   │   ├───domain
+│   │                   │   │   └───model
+│   │                   │   ├───dto
+│   │                   │   ├───exception
+│   │                   │   ├───repository
+│   │                   │   └───service
+│   │                   └───scheduler
+│   │                       ├───controller
+│   │                       ├───domain
+│   │                       │   └───model
+│   │                       ├───dto
+│   │                       ├───exception
+│   │                       ├───repository
+│   │                       └───service
+│   └───resources
+│       ├───static
+│       └───templates
+└───test
+    └───java
+        └───com
+            └───lsh
+                └───scheduler
+                    └───module
+                        ├───member
+                        │   ├───controller
+                        │   └───service
+                        └───scheduler
+                            ├───controller
+                            └───service
+```
