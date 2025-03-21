@@ -1,7 +1,6 @@
 package com.lsh.scheduler.module.scheduler.domain.model;
 
 import com.lsh.scheduler.module.member.domain.model.Member;
-import com.lsh.scheduler.module.scheduler.dto.SchedulerResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 

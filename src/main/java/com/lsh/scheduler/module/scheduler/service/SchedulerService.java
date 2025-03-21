@@ -28,7 +28,7 @@ public class SchedulerService {
      * @return 일정의 정보(비밀번호 제외)
      */
     public SchedulerResponseDto saveScheduler(SchedulerCreateRequestDto dto) {
-        return Scheduler.toDto(schedulerRepository.saveScheduler(dto)
+        return SchedulerResponseDto.toDto(schedulerRepository.saveScheduler(dto)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
@@ -43,7 +43,7 @@ public class SchedulerService {
      */
     public ListResponse<SchedulerResponseDto> getAllSchedulers(String name, LocalDate modifiedAt, Pageable pageable) {
         return ListResponse.fromPage(schedulerRepository.findAll(name, modifiedAt, pageable)
-                .map(Scheduler::toDto));
+                .map(SchedulerResponseDto::toDto));
     }
 
     /**
@@ -57,7 +57,7 @@ public class SchedulerService {
             throw new SchedulerException(SchedulerExceptionCode.WRONG_INPUT);
         }
 
-        return Scheduler.toDto(schedulerRepository.findById(schedulerId)
+        return SchedulerResponseDto.toDto(schedulerRepository.findById(schedulerId)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
@@ -70,7 +70,7 @@ public class SchedulerService {
     public SchedulerResponseDto updateScheduler(SchedulerUpdateRequestDto dto) {
         validatePassword(dto.getSchedulerId(), dto.getPassword());
 
-        return Scheduler.toDto(schedulerRepository.updateScheduler(dto)
+        return SchedulerResponseDto.toDto(schedulerRepository.updateScheduler(dto)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
@@ -83,7 +83,7 @@ public class SchedulerService {
     public SchedulerResponseDto deleteScheduler(SchedulerDeleteRequestDto dto) {
         validatePassword(dto.getSchedulerId(), dto.getPassword());
 
-        return Scheduler.toDto(schedulerRepository.deleteSchedulerById(dto.getSchedulerId())
+        return SchedulerResponseDto.toDto(schedulerRepository.deleteSchedulerById(dto.getSchedulerId())
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 

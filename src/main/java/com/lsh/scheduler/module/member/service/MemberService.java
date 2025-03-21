@@ -1,6 +1,5 @@
 package com.lsh.scheduler.module.member.service;
 
-import com.lsh.scheduler.module.member.domain.model.Member;
 import com.lsh.scheduler.module.member.dto.MemberCreateRequestDto;
 import com.lsh.scheduler.module.member.dto.MemberResponseDto;
 import com.lsh.scheduler.module.member.exception.MemberException;
@@ -21,7 +20,7 @@ public class MemberService {
      * @return 작성자 정보
      */
     public MemberResponseDto createMember(MemberCreateRequestDto dto) {
-        return Member.toDto(memberRepository.save(dto)
+        return MemberResponseDto.toDto(memberRepository.save(dto)
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND)));
     }
 }
