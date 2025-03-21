@@ -13,7 +13,7 @@
 ### Database
   - MySQL
 
-## 프로젝트 구조
+## 프로젝트 폴더 구조
 ``` text
 ├───main
 │   ├───java
