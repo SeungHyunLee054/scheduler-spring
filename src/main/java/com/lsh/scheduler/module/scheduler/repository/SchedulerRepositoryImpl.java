@@ -48,8 +48,8 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         parameters.put("task", schedulerCreateRequestDto.getTask());
         // 비밀번호를 passwordEncoder로 암호화하여 저장
         parameters.put("password", PasswordUtils.encode(schedulerCreateRequestDto.getPassword()));
-        parameters.put("createdAt", now);
-        parameters.put("modifiedAt", now);
+        parameters.put("created_at", now);
+        parameters.put("modified_at", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 
@@ -71,7 +71,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         List<Object> parameters = new ArrayList<>();
 
         if (name == null && modifiedAt != null) {
-            sql.append(" where date(s.modifiedAt) = ?");
+            sql.append(" where date(s.modified_at) = ?");
             parameters.add(modifiedAt);
         } else if (name != null && modifiedAt == null) {
             sql.append(" join scheduler.member m on m.id = s.member_id");
@@ -81,12 +81,12 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
             sql.append(" s");
             sql.append(" join scheduler.member m on m.id = s.member_id");
             sql.append("  where m.name = ?");
-            sql.append("  and date(s.modifiedAt) = ?");
+            sql.append("  and date(s.modified_at) = ?");
             parameters.add(name);
             parameters.add(modifiedAt);
         }
 
-        sql.append("  order by s.modifiedAt desc");
+        sql.append("  order by s.modified_at desc");
         sql.append("  limit ? offset ?");
         parameters.add(pageable.getPageSize());
         parameters.add(pageable.getOffset());
@@ -136,8 +136,8 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                 .member(memberRepository.findById(rs.getLong("member_id"))
                         .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND)))
                 .password(rs.getString("password"))
-                .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
-                .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .modifiedAt(rs.getTimestamp("modified_at").toLocalDateTime())
                 .build();
     }
 

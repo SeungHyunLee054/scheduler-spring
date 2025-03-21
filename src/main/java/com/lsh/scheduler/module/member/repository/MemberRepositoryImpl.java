@@ -30,8 +30,8 @@ public class MemberRepositoryImpl implements MemberRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", dto.getName());
         parameters.put("email", dto.getEmail());
-        parameters.put("createdAt", now);
-        parameters.put("modifiedAt", now);
+        parameters.put("created_at", now);
+        parameters.put("modified_at", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
 
@@ -47,8 +47,8 @@ public class MemberRepositoryImpl implements MemberRepository {
                         .id(rs.getLong("id"))
                         .name(rs.getString("name"))
                         .email(rs.getString("email"))
-                        .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
-                        .modifiedAt(rs.getTimestamp("modifiedAt").toLocalDateTime())
+                        .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                        .modifiedAt(rs.getTimestamp("modified_at").toLocalDateTime())
                         .build(), id).stream().findAny();
     }
 
