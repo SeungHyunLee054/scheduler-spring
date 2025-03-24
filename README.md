@@ -13,7 +13,7 @@
 - 일정의 id, password를 입력받아 password가 일치했을 때 해당하는 일정을 삭제할 수 있다.
 5. 유저 생성
 - 동명이인의 작성자가 있을 수 있기 때문에 작성자를 구분하기 위해 유저 테이블 생성
-- 유저명, 이메일을 입력바다 유저를 생성한다.
+- 유저명, 이메일을 입력받아 유저를 생성한다.
 
 ## [ERD](https://seunghyun937.notion.site/ERD-1bbc72e464458025bd62c5f529324874?pvs=4)
 ## [API 명세서](https://seunghyun937.notion.site/API-1bbc72e46445800bbe6ec841f6dab977?pvs=4)
@@ -37,6 +37,8 @@
 │   │       └───lsh
 │   │           └───scheduler
 │   │               ├───common
+│   │               │   ├───aop
+│   │               │   │   └───log
 │   │               │   ├───exception
 │   │               │   ├───response
 │   │               │   ├───security
@@ -76,4 +78,5 @@
                         └───scheduler
                             ├───controller
                             └───service
+
 ```
