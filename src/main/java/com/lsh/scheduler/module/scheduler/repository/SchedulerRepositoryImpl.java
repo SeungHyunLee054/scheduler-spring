@@ -20,7 +20,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -40,16 +39,14 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.NOT_FOUND));
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
-        simpleJdbcInsert.withTableName("scheduler").usingGeneratedKeyColumns("id");
+        simpleJdbcInsert.withTableName("scheduler").usingGeneratedKeyColumns("id")
+                .usingColumns("member_id", "task", "password");
 
-        LocalDateTime now = LocalDateTime.now();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("member_id", member.getId());
         parameters.put("task", schedulerCreateRequestDto.getTask());
         // 비밀번호를 passwordEncoder로 암호화하여 저장
         parameters.put("password", PasswordUtils.encode(schedulerCreateRequestDto.getPassword()));
-        parameters.put("created_at", now);
-        parameters.put("modified_at", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(parameters));
 

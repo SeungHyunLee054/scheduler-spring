@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -24,14 +23,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public Optional<Member> save(MemberCreateRequestDto dto) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
-        simpleJdbcInsert.withTableName("member").usingGeneratedKeyColumns("id");
+        simpleJdbcInsert.withTableName("member").usingGeneratedKeyColumns("id")
+                .usingColumns("name", "email");
 
-        LocalDateTime now = LocalDateTime.now();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", dto.getName());
         parameters.put("email", dto.getEmail());
-        parameters.put("created_at", now);
-        parameters.put("modified_at", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);
 
