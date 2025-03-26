@@ -47,13 +47,17 @@ public class SchedulerController {
         return ResponseEntity.ok(schedulerService.getSchedulerById(schedulerId));
     }
 
-    @PutMapping
-    public ResponseEntity<SchedulerResponseDto> updateScheduler(@Valid @RequestBody SchedulerUpdateRequestDto dto) {
-        return ResponseEntity.ok(schedulerService.updateScheduler(dto));
+    @PutMapping("/{schedulerId}")
+    public ResponseEntity<SchedulerResponseDto> updateScheduler(
+            @PathVariable long schedulerId,
+            @Valid @RequestBody SchedulerUpdateRequestDto dto) {
+        return ResponseEntity.ok(schedulerService.updateScheduler(schedulerId, dto));
     }
 
-    @DeleteMapping
-    public ResponseEntity<SchedulerResponseDto> deleteScheduler(@Valid @RequestBody SchedulerDeleteRequestDto dto) {
-        return ResponseEntity.ok(schedulerService.deleteScheduler(dto));
+    @DeleteMapping("/{schedulerId}")
+    public ResponseEntity<SchedulerResponseDto> deleteScheduler(
+            @PathVariable long schedulerId,
+            @Valid @RequestBody SchedulerDeleteRequestDto dto) {
+        return ResponseEntity.ok(schedulerService.deleteScheduler(schedulerId, dto));
     }
 }

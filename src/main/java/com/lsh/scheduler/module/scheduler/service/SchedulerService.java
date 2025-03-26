@@ -64,26 +64,28 @@ public class SchedulerService {
     /**
      * 일정을 수정
      *
-     * @param dto 일정 id, 할일, 작성자명, 비밀번호
+     * @param schedulerId 일정 id
+     * @param dto         할일, 작성자명, 비밀번호
      * @return 수정완료된 일정 정보(비밀번호 제외)
      */
-    public SchedulerResponseDto updateScheduler(SchedulerUpdateRequestDto dto) {
-        validatePassword(dto.getSchedulerId(), dto.getPassword());
+    public SchedulerResponseDto updateScheduler(long schedulerId, SchedulerUpdateRequestDto dto) {
+        validatePassword(schedulerId, dto.getPassword());
 
-        return SchedulerResponseDto.toDto(schedulerRepository.updateScheduler(dto)
+        return SchedulerResponseDto.toDto(schedulerRepository.updateScheduler(schedulerId, dto)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 
     /**
      * 일정을 삭제
      *
-     * @param dto 일정 id, 비밀번호
-     * @return 삭제된 일정 정보
+     * @param schedulerId 일정 id
+     * @param dto         비밀번호
+     * @return 삭제된 일정 정보(비밀번호 제외)
      */
-    public SchedulerResponseDto deleteScheduler(SchedulerDeleteRequestDto dto) {
-        validatePassword(dto.getSchedulerId(), dto.getPassword());
+    public SchedulerResponseDto deleteScheduler(long schedulerId, SchedulerDeleteRequestDto dto) {
+        validatePassword(schedulerId, dto.getPassword());
 
-        return SchedulerResponseDto.toDto(schedulerRepository.deleteSchedulerById(dto.getSchedulerId())
+        return SchedulerResponseDto.toDto(schedulerRepository.deleteSchedulerById(schedulerId)
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.NOT_FOUND)));
     }
 

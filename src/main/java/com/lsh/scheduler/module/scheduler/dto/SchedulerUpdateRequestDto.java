@@ -9,8 +9,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SchedulerUpdateRequestDto {
     @NotNull
-    private long schedulerId;
-    @NotNull
     @Size(max = 200)
     private String task;
     @NotNull

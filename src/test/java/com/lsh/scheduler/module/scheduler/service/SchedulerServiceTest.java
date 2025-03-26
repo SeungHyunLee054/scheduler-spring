@@ -167,11 +167,11 @@ class SchedulerServiceTest {
     void success_updateScheduler() {
         // Given
         SchedulerUpdateRequestDto dto =
-                new SchedulerUpdateRequestDto(1L, "test2", "test2", "test");
+                new SchedulerUpdateRequestDto("test2", "test2", "test");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
-        given(schedulerRepository.updateScheduler(any()))
+        given(schedulerRepository.updateScheduler(anyLong(), any()))
                 .willReturn(Optional.of(Scheduler.builder()
                         .id(1L)
                         .task("test2")
@@ -183,10 +183,10 @@ class SchedulerServiceTest {
                         .build()));
 
         // When
-        SchedulerResponseDto result = schedulerService.updateScheduler(dto);
+        SchedulerResponseDto result = schedulerService.updateScheduler(1L, dto);
 
         // Then
-        verify(schedulerRepository, times(1)).updateScheduler(any());
+        verify(schedulerRepository, times(1)).updateScheduler(anyLong(), any());
         assertAll(
                 () -> assertEquals(1L, result.getId()),
                 () -> assertEquals("test2", result.getName()),
@@ -200,14 +200,14 @@ class SchedulerServiceTest {
     void fail_updateScheduler_schedulerNotFound() {
         // Given
         SchedulerUpdateRequestDto dto =
-                new SchedulerUpdateRequestDto(1L, "test", "test", "test");
+                new SchedulerUpdateRequestDto("test", "test", "test");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(dto));
+                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(1L, dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.NOT_FOUND, exception.getErrorCode());
@@ -219,14 +219,14 @@ class SchedulerServiceTest {
     void fail_updateScheduler_wrongPassword() {
         // Given
         SchedulerUpdateRequestDto dto =
-                new SchedulerUpdateRequestDto(1L, "test", "test", "wrongPassword");
+                new SchedulerUpdateRequestDto("test", "test", "wrongPassword");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(dto));
+                assertThrows(SchedulerException.class, () -> schedulerService.updateScheduler(1L, dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.WRONG_PASSWORD, exception.getErrorCode());
@@ -237,7 +237,7 @@ class SchedulerServiceTest {
     @DisplayName("일정 삭제 성공")
     void success_deleteScheduler() {
         // Given
-        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "test");
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto("test");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
@@ -245,7 +245,7 @@ class SchedulerServiceTest {
                 .willReturn(Optional.of(getScheduler(getMember())));
 
         // When
-        SchedulerResponseDto result = schedulerService.deleteScheduler(dto);
+        SchedulerResponseDto result = schedulerService.deleteScheduler(1L, dto);
 
         // Then
         verify(schedulerRepository, times(1)).deleteSchedulerById(anyLong());
@@ -258,17 +258,17 @@ class SchedulerServiceTest {
     }
 
     @Test
-    @DisplayName("일정 삭제 실패 - id로 검색된 일징이 없음")
+    @DisplayName("일정 삭제 실패 - id로 검색된 일정이 없음")
     void fail_deleteScheduler_schedulerNotFound() {
         // Given
-        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "test");
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto("test");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(dto));
+                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(1L, dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.NOT_FOUND, exception.getErrorCode());
@@ -279,14 +279,14 @@ class SchedulerServiceTest {
     @DisplayName("일정 삭제 실패 - 비밀번호 불일치")
     void fail_deleteScheduler_wrongPassword() {
         // Given
-        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "wrongPassword");
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto("wrongPassword");
 
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.of(getScheduler(getMember())));
 
         // When
         SchedulerException exception =
-                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(dto));
+                assertThrows(SchedulerException.class, () -> schedulerService.deleteScheduler(1L, dto));
 
         // Then
         assertEquals(SchedulerExceptionCode.WRONG_PASSWORD, exception.getErrorCode());

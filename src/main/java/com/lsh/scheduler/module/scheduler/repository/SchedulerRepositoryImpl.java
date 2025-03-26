@@ -95,13 +95,13 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
     }
 
     @Override
-    public Optional<Scheduler> updateScheduler(SchedulerUpdateRequestDto dto) {
+    public Optional<Scheduler> updateScheduler(long schedulerId, SchedulerUpdateRequestDto dto) {
         String sql = "update scheduler.scheduler s " +
                 "join scheduler.member m on m.id = s.member_id " +
                 "set s.task=?,m.name=? where s.id=?";
-        int row = jdbcTemplate.update(sql, dto.getTask(), dto.getMemberName(), dto.getSchedulerId());
+        int row = jdbcTemplate.update(sql, dto.getTask(), dto.getMemberName(), schedulerId);
         if (row > 0) {
-            return findById(dto.getSchedulerId());
+            return findById(schedulerId);
         }
 
         return Optional.empty();

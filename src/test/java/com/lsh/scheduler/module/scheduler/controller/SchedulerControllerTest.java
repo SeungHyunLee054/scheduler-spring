@@ -184,14 +184,15 @@ class SchedulerControllerTest {
     @WithMockUser
     void success_updateScheduler() throws Exception {
         // Given
+        Long schedulerId = 1L;
         SchedulerUpdateRequestDto dto =
-                new SchedulerUpdateRequestDto(1L, "test", "test", "test");
+                new SchedulerUpdateRequestDto("test", "test", "test");
 
-        given(schedulerService.updateScheduler(any()))
+        given(schedulerService.updateScheduler(anyLong(), any()))
                 .willReturn(getResponseDto());
 
         // When
-        ResultActions perform = mockMvc.perform(put("/schedulers")
+        ResultActions perform = mockMvc.perform(put("/schedulers/{schedulerId}", schedulerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto))
                 .with(csrf()));
@@ -214,13 +215,14 @@ class SchedulerControllerTest {
     @WithMockUser
     void test() throws Exception {
         // Given
-        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto(1L, "test");
+        Long schedulerId = 1L;
+        SchedulerDeleteRequestDto dto = new SchedulerDeleteRequestDto("test");
 
-        given(schedulerService.deleteScheduler(any()))
+        given(schedulerService.deleteScheduler(anyLong(), any()))
                 .willReturn(getResponseDto());
 
         // When
-        ResultActions perform = mockMvc.perform(delete("/schedulers")
+        ResultActions perform = mockMvc.perform(delete("/schedulers/{schedulerId}", schedulerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto))
                 .with(csrf()));

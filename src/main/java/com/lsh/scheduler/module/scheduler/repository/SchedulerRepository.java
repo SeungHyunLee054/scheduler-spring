@@ -17,7 +17,7 @@ public interface SchedulerRepository {
 
     Page<Scheduler> findAll(String name, LocalDate modifiedAt, Pageable pageable);
 
-    Optional<Scheduler> updateScheduler(SchedulerUpdateRequestDto schedulerUpdateRequestDto);
+    Optional<Scheduler> updateScheduler(long id, SchedulerUpdateRequestDto schedulerUpdateRequestDto);
 
     Optional<Scheduler> deleteSchedulerById(long id);
 }

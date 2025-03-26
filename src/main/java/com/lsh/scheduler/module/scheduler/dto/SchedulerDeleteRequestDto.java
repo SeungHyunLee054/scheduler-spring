@@ -8,7 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SchedulerDeleteRequestDto {
     @NotNull
-    private long schedulerId;
-    @NotNull
     private String password;
 }
