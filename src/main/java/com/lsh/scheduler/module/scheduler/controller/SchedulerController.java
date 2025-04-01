@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,8 @@ public class SchedulerController {
     @PostMapping
     public ResponseEntity<SchedulerResponseDto> createScheduler(
             @Valid @RequestBody SchedulerCreateRequestDto dto) {
-        return ResponseEntity.ok(schedulerService.saveScheduler(dto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(schedulerService.saveScheduler(dto));
     }
 
     @GetMapping

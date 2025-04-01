@@ -5,6 +5,7 @@ import com.lsh.scheduler.module.member.dto.MemberResponseDto;
 import com.lsh.scheduler.module.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<MemberResponseDto> createMember(@Valid @RequestBody MemberCreateRequestDto dto) {
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(memberService.createMember(dto));
     }
 }
