@@ -67,13 +67,20 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         StringBuilder sql = new StringBuilder("select * from scheduler.scheduler s");
         List<Object> parameters = new ArrayList<>();
 
+        StringBuilder tmp = new StringBuilder();
+        int totalCnt = getTotalCnt(tmp, parameters);
         if (name == null && modifiedAt != null) {
             sql.append(" where date(s.modified_at) = ?");
             parameters.add(modifiedAt);
+            tmp.append(" where date(s.modified_at) = ?");
+            totalCnt = getTotalCnt(tmp, parameters);
         } else if (name != null && modifiedAt == null) {
             sql.append(" join scheduler.member m on m.id = s.member_id");
             sql.append("  where m.name = ?");
             parameters.add(name);
+            tmp.append(" join scheduler.member m on m.id = s.member_id");
+            tmp.append("  where m.name = ?");
+            totalCnt = getTotalCnt(tmp, parameters);
         } else if (name != null) {
             sql.append(" s");
             sql.append(" join scheduler.member m on m.id = s.member_id");
@@ -81,6 +88,11 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
             sql.append("  and date(s.modified_at) = ?");
             parameters.add(name);
             parameters.add(modifiedAt);
+            tmp.append(" s");
+            tmp.append(" join scheduler.member m on m.id = s.member_id");
+            tmp.append("  where m.name = ?");
+            tmp.append("  and date(s.modified_at) = ?");
+            totalCnt = getTotalCnt(tmp, parameters);
         }
 
         sql.append("  order by s.modified_at desc");
@@ -91,7 +103,7 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
         List<Scheduler> result = jdbcTemplate.query(sql.toString(), (rs, rowNum) -> getBuild(rs),
                 parameters.toArray());
 
-        return new PageImpl<>(result, pageable, getTotalCnt());
+        return new PageImpl<>(result, pageable, totalCnt);
     }
 
     @Override
@@ -143,9 +155,16 @@ public class SchedulerRepositoryImpl implements SchedulerRepository {
      *
      * @return 전체 일정 수
      */
-    private int getTotalCnt() {
+    private int getTotalCnt(StringBuilder sql, List<Object> parameters) {
         String countSql = "select count(*) from scheduler.scheduler";
-        Integer totalCnt = jdbcTemplate.queryForObject(countSql, Integer.class);
+        countSql += sql.toString();
+
+        Integer totalCnt;
+        if (parameters.isEmpty()) {
+            totalCnt = jdbcTemplate.queryForObject(countSql, Integer.class);
+        } else {
+            totalCnt = jdbcTemplate.queryForObject(countSql, Integer.class, parameters.toArray());
+        }
 
         return totalCnt == null ? 0 : totalCnt;
     }
